@@ -277,7 +277,7 @@ namespace bilbasen
                "3.See all red cars.\n" +
                "4.See the number of vehicles that have the same brand as the first vehicle in the dataset.\n" +
                "5.See all vehicles that were manufactured between 1980 and 1999.\n" +
-               "6.See all vehicles." + 
+               "6.See all vehicles.\n" + 
                "7.Exit");
 
                 command = Console.ReadLine();
