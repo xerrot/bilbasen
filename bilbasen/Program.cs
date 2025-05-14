@@ -1,175 +1,319 @@
 ﻿using Microsoft.VisualBasic;
+using Microsoft.VisualBasic.FileIO;
 using System;
+using System.Diagnostics;
+using System.Drawing;
+using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.ConstrainedExecution;
+using System.Threading.Tasks.Dataflow;
 
 namespace bilbasen
 {
-    public class Car
+    public interface ICar
     {
-        public string Brand { get; set; }
-        public string Model { get; set; }
-        public int Year { get; set; }
-        public string Color { get; set; }
-        public int NumberOfDoors { get; set; }
-        public int Weight { get; set; }
-        public int TrunkVolume { get; set; }
-        public Engine engine { get; set; }
+        string Brand { get; }
+        string Model { get; }
+        double Price { get; }
+    }
 
-        public void DisplayInfo()
+    public abstract class Vehicle : ICar
+    {
+        private string _type;
+        private string _brand;
+        private string _model;
+        private double _price;
+        private int _year;
+        private string _color;
+        private int _numberOfDoors;
+        private double _weight;
+        private double _trunkVolume;
+        private int _horsePower;
+        public string Brand { get => _brand; }
+        public string Model { get => _model; }
+        public double Price { get => _price; }
+        public int Year { get => _year; }
+        public string Color { get => _color; }
+        public int NumberOfDoors { get => _numberOfDoors; }
+        public double Weight { get => _weight; }
+        public double TrunkVolume { get => _trunkVolume; }
+        public int HorsePower { get => _horsePower; }
+        public string type { get => _type; }
+
+        public abstract void DisplayInfo();
+
+        public Vehicle(string type, string brand, string model, double price, int year, string color, int numberDoors, double weight, double trunkVolume, int HP)
         {
-            Console.WriteLine("----- Car Information -----");
+            _type = type;
+            _brand = brand;
+            _model = model;
+            _price = price;
+            _year = year;
+            _color = color;
+            _numberOfDoors = numberDoors;
+            _weight = weight;
+            _trunkVolume = trunkVolume;
+            _horsePower = HP;
+
+        }
+    }
+
+    public class FuelCar : Vehicle
+    {
+        private string _fuelType;
+        private string _type;
+
+        public string TypeOfVehicle { get => _type; }
+        public string FuelType { get => _fuelType; }
+
+        public FuelCar(string type, string brand, string model, double price, int year, string color, int numberDoors, double weight, double trunkVolume, int HP, string fuel_type)
+            : base(type, brand, model, price, year, color, numberDoors, weight, trunkVolume, HP)
+        {
+            _fuelType = fuel_type;
+            _type = type;
+        }
+
+        public override void DisplayInfo()
+        {
+            Console.WriteLine("----- Vehicle Information -----");
+            Console.WriteLine($"Type          : {type}");
             Console.WriteLine($"Brand         : {Brand}");
             Console.WriteLine($"Model         : {Model}");
+            Console.WriteLine($"Horse Powers  : {HorsePower} HP");
             Console.WriteLine($"Year          : {Year}");
             Console.WriteLine($"Color         : {Color}");
             Console.WriteLine($"Doors         : {NumberOfDoors}");
             Console.WriteLine($"Weight        : {Weight} kg");
             Console.WriteLine($"Trunk Volume  : {TrunkVolume} L");
-            Console.WriteLine($"Engine        : {engine}");
-            Console.WriteLine("----------------------------");
+            Console.WriteLine($"Fuel Type     : {FuelType} ");
+            Console.WriteLine("-------------------------------\n");
         }
-
-        public Car(string brand, string model, int year, string color, int num_doors, int weight, int trunkVolume, Engine engine)
-        {
-            Brand = brand;
-            Model = model;
-            Year = year;
-            Color = color;
-            NumberOfDoors = num_doors;
-            Weight = weight;
-            TrunkVolume = trunkVolume;
-            this.engine = engine;
-        }
-
     }
 
-    public class Engine
+    public class ElectricCar : Vehicle
     {
-        public string Type { get; set; }
-        public int HorsePower { get; set; }
-        public int NumberOfCylinders { get; set; }
-        public int Torque { get; set; }
+        private int _batteryCapacity { get; set; } //kWh
+        private string _type;
 
-        public override string ToString()
+        public string TypeOfVehicle { get => _type; }
+        public int BatterCapacity { get => _batteryCapacity; }
+
+
+        public ElectricCar(string type, string brand, string model, double price, int year, string color, int numberDoors, double weight, double trunkVolume, int HP, int battery_capacity)
+            : base(type, brand, model, price, year, color, numberDoors, weight, trunkVolume, HP)
         {
-            return $"Type: {Type}, HorsePower: {HorsePower} HP, Cylinders: {NumberOfCylinders}, torque: {Torque}";
+            _batteryCapacity = battery_capacity;
+            _type = type;
         }
 
-        public Engine(string type, int horsepower, int num_cylinders, int torque)
+        public override void DisplayInfo()
         {
-            Type = type;
-            HorsePower = horsepower;
-            NumberOfCylinders = num_cylinders;
-            Torque = torque;
+            Console.WriteLine("----- Vehicle Information -----");
+            Console.WriteLine($"Type          : {TypeOfVehicle}");
+            Console.WriteLine($"Brand         : {Brand}");
+            Console.WriteLine($"Model         : {Model}");
+            Console.WriteLine($"Horse Powers  : {HorsePower} HP");
+            Console.WriteLine($"Year          : {Year}");
+            Console.WriteLine($"Color         : {Color}");
+            Console.WriteLine($"Doors         : {NumberOfDoors}");
+            Console.WriteLine($"Weight        : {Weight} kg");
+            Console.WriteLine($"Trunk Volume  : {TrunkVolume} L");
+            Console.WriteLine($"Battery Capacity: {BatterCapacity}");
+            Console.WriteLine("-------------------------------\n");
         }
     }
+
+    public class Motorcycle : Vehicle
+    {
+        private string _fuelType;
+        private string _type;
+
+        public string TypeOfVehicle { get => _type; }
+        public string FuelType { get => _fuelType; }
+
+        public Motorcycle(string type, string brand, string model, double price, int year, string color, int numberDoors, double weight, double trunkVolume, int HP, string fuel_type)
+            : base(type, brand, model, price, year, color, numberDoors, weight, trunkVolume, HP)
+        {
+            _type = type;
+            _fuelType = fuel_type;
+        }
+
+        public override void DisplayInfo()
+        {
+            Console.WriteLine("----- Vehicle Information -----");
+            Console.WriteLine($"Type          : {TypeOfVehicle}");
+            Console.WriteLine($"Brand         : {Brand}");
+            Console.WriteLine($"Model         : {Model}");
+            Console.WriteLine($"Horse Powers  : {HorsePower} HP");
+            Console.WriteLine($"Year          : {Year}");
+            Console.WriteLine($"Color         : {Color}");
+            Console.WriteLine($"Doors         : {NumberOfDoors}");
+            Console.WriteLine($"Weight        : {Weight} kg");
+            Console.WriteLine($"Trunk Volume  : {TrunkVolume} L");
+            Console.WriteLine($"Type          : {FuelType} ");
+            Console.WriteLine("-------------------------------\n");
+        }
+    }
+
 
     class Program
     {
         static void Main(string[] args)
         {
-            var brands = new[] { "Toyota", "BMW", "Ford", "Audi", "Honda", "Tesla", "Volkswagen" };
-            var models = new[] { "Corolla", "3 Series", "Focus", "A4", "Civic", "Model 3", "Golf" };
-            var colors = new[] { "Red", "Black", "White", "Blue", "Grey", "Green", "Yellow" };
-            var engineTypes = new[] { "Petrol", "Diesel", "Electric", "Hybrid" };
+            Random rnd = new Random(442);
+            List<Vehicle> vehicles = new List<Vehicle>();
+            string[] colors = { "Red", "Blue", "Black", "White", "Silver", "Green", "Yellow", "Gray" };
 
-            Random random = new Random(447);
-            List<Car> cars = new List<Car>();
+            string[] fuelCarModels = { "Corolla", "Civic", "A4", "Mustang" };
+            string[] electricCarModels = { "Model 3", "Leaf", "ID.4", "i3" };
+            string[] motorcycleModels = { "MT-07", "Ninja 400", "CBR500R", "Z650" };
 
-            for (int i = 0; i < 100; i++)
+            string[] fuelCarBrands = { "Toyota", "Honda", "Audi", "Ford" };
+            string[] electricCarBrands = { "Tesla", "Nissan", "BMW", "Volkswagen" };
+            string[] motorcycleBrands = { "Yamaha", "Kawasaki", "Honda", "Suzuki" };
+
+            int[] horsePowers = { 100, 150, 200, 250, 300 };
+            string[] fuelTypes = { "Petrol", "Diesel", "Gasoline" }; // for fuel cars
+            int[] batteryCapacities = { 40, 60, 75, 85, 100 }; // for electric cars
+            int[] years = { 1975, 1980, 1985, 1986, 1987, 1988, 1989, 1990, 1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2005, 2010, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023 };
+            int[] doorCounts = { 2, 3, 4, 5 };
+            double[] weights = { 1000, 1200, 1400, 1600, 1800, 2000 };
+            double[] trunkVolumes = { 300, 400, 500, 600 };
+            double[] prices = { 100000, 150000, 200000, 250000, 300000 };
+
+            // add 50 fuel cars
+            for (int i = 0; i < 50; i++)
             {
-                var brand = brands[random.Next(brands.Length)];
-                var model = models[random.Next(models.Length)];
-                var color = colors[random.Next(colors.Length)];
-                var engineType = engineTypes[random.Next(engineTypes.Length)];
-                var year = random.Next(1995, 2025);
-                var doors = random.Next(2, 6);
-                var weight = random.Next(900, 2500);
-                var trunk = random.Next(200, 700);
-                var horsepower = random.Next(70, 600);
-                var cylinders = engineType == "Electric" ? 0 : random.Next(3, 12);
-                var torque = random.Next(100, 800);
-
-                var engine = new Engine(engineType, horsepower, cylinders, torque);
-                var car = new Car(brand, model, year, color, doors, weight, trunk, engine);
-
-                cars.Add(car);
-
+                vehicles.Add(new FuelCar(
+                    "Fuel Car",
+                    fuelCarBrands[rnd.Next(fuelCarBrands.Length)],          // brand, model, price, year, color, numberDoors, weight, trunkVolume, HP, fuelType
+                    fuelCarModels[rnd.Next(fuelCarModels.Length)],
+                    prices[rnd.Next(prices.Length)],
+                    years[rnd.Next(years.Length)],
+                    colors[rnd.Next(colors.Length)],
+                    doorCounts[rnd.Next(doorCounts.Length)],
+                    weights[rnd.Next(weights.Length)],
+                    trunkVolumes[rnd.Next(trunkVolumes.Length)],
+                    horsePowers[rnd.Next(horsePowers.Length)],
+                    fuelTypes[rnd.Next(fuelTypes.Length)]
+                ));
             }
 
-            // display all cars of the same brand as the first car in dataset
-            void DisplayCarsSameBrand()
+            // add 25 electric cars
+            for (int i = 0; i < 25; i++)
             {
-                foreach (var car in cars)
+                vehicles.Add(new ElectricCar(
+                    "Electric",
+                    electricCarBrands[rnd.Next(electricCarBrands.Length)],      //brand, model, price, year, color, numberDoors, weight, trunkVolume, HP, battery_capacity
+                    electricCarModels[rnd.Next(electricCarModels.Length)],
+                    prices[rnd.Next(prices.Length)],
+                    years[rnd.Next(years.Length)],
+                    colors[rnd.Next(colors.Length)],
+                    doorCounts[rnd.Next(doorCounts.Length)],
+                    weights[rnd.Next(weights.Length)],
+                    trunkVolumes[rnd.Next(trunkVolumes.Length)],
+                    horsePowers[rnd.Next(horsePowers.Length)],
+                    batteryCapacities[rnd.Next(batteryCapacities.Length)]
+                ));
+            }
+
+            // add 25 motorcycles
+            for (int i = 0; i < 25; i++)
+            {
+                vehicles.Add(new Motorcycle(
+                    "Motorcycle",
+                    motorcycleBrands[rnd.Next(motorcycleBrands.Length)],      //brand, model, price, year, color, numberDoors, weight, trunkVolume, HP, fuel_type
+                    motorcycleModels[rnd.Next(motorcycleModels.Length)],
+                    prices[rnd.Next(prices.Length)],
+                    years[rnd.Next(years.Length)],
+                    colors[rnd.Next(colors.Length)],
+                    0,
+                    weights[rnd.Next(weights.Length)] / 5,
+                    trunkVolumes[rnd.Next(trunkVolumes.Length)] / 5,
+                    horsePowers[rnd.Next(horsePowers.Length)],
+                    fuelTypes[rnd.Next(fuelTypes.Length)]
+                ));
+            }
+
+            void PrintSameBrand()
+            {
+                foreach (var vehicle in vehicles.Where(v => v.Brand == vehicles[0].Brand)) { vehicle.DisplayInfo(); }
+            }
+
+            void PrintAllRed()
+            {
+                foreach (var vehicle in vehicles.Where(v => v.Color.ToLower() == "red")) { vehicle.DisplayInfo(); }
+            }
+
+            void PrintAllOver200HP()
+            {
+                foreach (var vehicle in vehicles.Where(v => v.HorsePower >= 200)) { vehicle.DisplayInfo(); }
+            }
+
+            void PrintNumberSameBrand()
+            {
+                string firstBrand = vehicles[0].Brand;
+                int sameBrandCount = vehicles.Count(v => v.Brand == firstBrand);
+                Console.WriteLine($"There are {sameBrandCount} vehicles of the brand {firstBrand}");
+            }
+
+            void PrintBetween1980And1999()
+            {
+                foreach (var vehicle in vehicles.Where(v => v.Year >= 1980 && v.Year <= 1999)) { vehicle.DisplayInfo(); }
+            }
+
+            void PrintAll()
+            {
+                foreach (var vehicle in vehicles) { vehicle.DisplayInfo(); }
+            }
+
+
+            string command;
+            while (true)
+            {
+                Console.WriteLine("Welcome to Bilbasen! Please choose what you want to do:\n\n" +
+               "1.See all vehicles that have the same brand as the first vehicle in the dataset.\n" +
+               "2.See all vehicles that have more than 200 horse powers.\n" +
+               "3.See all red cars.\n" +
+               "4.See the number of vehicles that have the same brand as the first vehicle in the dataset.\n" +
+               "5.See all vehicles that were manufactured between 1980 and 1999.\n" +
+               "6.See all vehicles." + 
+               "7.Exit");
+
+                command = Console.ReadLine();
+                switch (command)
                 {
-                    if (car.Brand == cars[0].Brand)
-                    {
-                        car.DisplayInfo();
-                    }
-                    else
-                    {
-                        continue;
-                    }
+                    case "1":
+                        Console.Clear();
+                        PrintSameBrand(); break;
+                    case "2":
+                        Console.Clear();
+                        PrintAllOver200HP(); break;
+                    case "3":
+                        Console.Clear();
+                        PrintAllRed(); break;
+                    case "4":
+                        Console.Clear();
+                        PrintNumberSameBrand(); break;
+                    case "5":
+                        Console.Clear();
+                        PrintBetween1980And1999(); break;
+                    case "6":
+                        Console.Clear();
+                        PrintAll(); break;
+                    case "7":
+                        Console.Clear();
+                        Console.WriteLine("Have a nice day!");
+                        Thread.Sleep(500);
+                        Environment.Exit(0);
+                        break;
+                    default: Console.Clear(); Console.WriteLine("Please etner a valid number and try again!"); break;
                 }
-
+                Console.WriteLine("Press any key to go back");
+                Console.ReadKey();
+                Console.Clear();
             }
 
-            //display all cars that have more than 200 HP
-            void DsipalyCars200HP()
-            {
-                foreach (var car in cars)
-                {
-                    if (car.engine.HorsePower >= 200)
-                    {
-                        car.DisplayInfo();
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-            }
-
-            void DisplayRedCars()
-            {
-                foreach (var car in cars)
-                {
-                    if (car.Color.ToLower() == "red")
-                    {
-                        car.DisplayInfo();
-                    }
-                    else { continue; }
-                }
-            }
-
-            int index = 0;
-            void DisplayNumberOfCars()
-            {
-                foreach (var car in cars)
-                {
-                    if (car.Brand == cars[0].Brand)
-                    {
-                        index++;
-                    }
-                    else
-                    {
-                        continue;
-                    }
-                }
-                Console.WriteLine($"Amount of cars of brand {cars[0].Brand} is {index}");
-            }
-
-            void DisplayCarsBetween1980and1999()
-            {
-                foreach (var car in cars)
-                {
-                    if (car.Year > 1980 && car.Year < 1999)
-                    {
-                        car.DisplayInfo();
-                    }
-                    else { continue; }
-                }
-            }
         }
     }
 }
